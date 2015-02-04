@@ -1,0 +1,13 @@
+#! /bin/bash
+
+if hash readlink
+then
+	PATH_SCRIPT=`readlink -f $0`
+else
+	PATH_SCRIPT="$0"
+fi
+
+DIR_BASE=`dirname $PATH_SCRIPT`
+
+$DIR_BASE/markdown-html.sh $@
+exit $?
