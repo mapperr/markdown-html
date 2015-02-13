@@ -1,6 +1,7 @@
 #! /bin/bash
 
-DEBUG="nonblank"
+# set to any value to activate verbose logging
+DEBUG=""
 
 if hash readlink
 then
