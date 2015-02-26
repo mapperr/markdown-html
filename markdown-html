@@ -9,5 +9,5 @@ fi
 
 DIR_BASE=`dirname $PATH_SCRIPT`
 
-$DIR_BASE/markdown-html.sh $@
+$DIR_BASE/bin/markdown-html.sh $@
 exit $?

@@ -21,20 +21,15 @@ fi
 
 BIN_MD_TOOL="$DIR_BASE/bin/Markdown.pl"
 
-DIR_SITE_SOURCE="$1"
+SITE_SOURCE="$1"
 STYLE="$2"
 
-if test -z $DIR_SITE_SOURCE
+if test -z $SITE_SOURCE
 then
-	echo "specify a directory with the site source"
+	echo "specify a directory with the site source or a file to convert"
 	exit 1
 fi
 
-if ! test -d $DIR_SITE_SOURCE
-then
-	echo "the directory [$DIR_SITE_SOURCE] does not exists"
-	exit 1
-fi
 
 if test -z "$STYLE"
 then
@@ -45,6 +40,28 @@ if ! test -r "$DIR_BASE/styles/$STYLE.css"
 then
 	echo "style [$STYLE] does not exists"
 	test ! -z $DEBUG && echo "$DIR_BASE/styles/$STYLE.css"
+	exit 1
+fi
+
+if test -f "$SITE_SOURCE"
+then
+	DIR_FILE_SOURCE=`dirname "$SITE_SOURCE"`
+	FILE_NAME=`basename $SITE_SOURCE | sed 's/\.md$//g'`
+	FILE_OUTPUT="$DIR_FILE_SOURCE/$FILE_NAME.html"
+	
+	cat $DIR_BASE/fragments/1.html $DIR_BASE/styles/$STYLE.css $DIR_BASE/fragments/2.html > $FILE_OUTPUT
+	$BIN_MD_TOOL $SITE_SOURCE >> $FILE_OUTPUT
+	cat $DIR_BASE/fragments/3.html >> $FILE_OUTPUT
+	
+	exit 0
+fi
+
+
+DIR_SITE_SOURCE="$SITE_SOURCE"
+
+if ! test -d $DIR_SITE_SOURCE
+then
+	echo "the directory [$DIR_SITE_SOURCE] does not exists"
 	exit 1
 fi
 
@@ -60,7 +77,7 @@ test ! -z $DEBUG && echo "created output directory [$DIR_SITE_OUTPUT]"
 for FILE_MARKDOWN in $FILES_MARKDOWN
 do
 	PATH_CLEAN_FILE_MARKDOWN=`echo $FILE_MARKDOWN | sed s/^\.//g`
-	FILE_NAME=`basename $FILE_MARKDOWN | tr -d .md`
+	FILE_NAME=`basename $FILE_MARKDOWN | sed 's/\.md$//g'`
 	DIR_OUTPUT_FILE="$DIR_SITE_OUTPUT`dirname $PATH_CLEAN_FILE_MARKDOWN`"
 	
 	test ! -d $DIR_OUTPUT_FILE && mkdir $DIR_OUTPUT_FILE
